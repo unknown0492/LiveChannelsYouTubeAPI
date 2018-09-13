@@ -2,18 +2,43 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
+    signingConfigs {
+        debug {
+            storeFile file("G:/Workspaces/android_studio/keystores/livechannels.jks")
+            storePassword "9xmhaqse"
+            keyAlias "livechannels"
+            keyPassword "9xmhaqse"
+            v2SigningEnabled true
+        }
+        release {
+            storeFile file("G:/Workspaces/android_studio/keystores/livechannels.jks")
+            storePassword "9xmhaqse"
+            keyAlias "livechannels"
+            keyPassword "9xmhaqse"
+            v2SigningEnabled true
+        }
+
+    }
     defaultConfig {
         applicationId "com.excel.livechannels"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        release {
+        /*release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }*/
+        debug {
+            signingConfig signingConfigs.debug
+            debuggable true
+        }
+        release {
+            signingConfig signingConfigs.release
+            debuggable true
         }
     }
 }
