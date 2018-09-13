@@ -1,0 +1,28 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardview"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
+    android:focusableInTouchMode="true"
+    android:focusable="true">
+
+    <!--<TextView
+        android:id="@+id/tv_spacing"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:text="a"
+        android:background="#e40fe4" />-->
+
+    <ImageView
+        android:id="@+id/iv"
+        android:layout_gravity="center"
+        android:layout_width="215dp"
+        android:layout_height="123dp"
+        android:clickable="false"/>
+
+
+
+</RelativeLayout>
