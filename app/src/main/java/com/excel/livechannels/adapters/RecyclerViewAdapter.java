@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.excel.livechannels.PlayVideoActivity;
 import com.excel.livechannels.R;
 import com.excel.livechannels.data.VideoInfo;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -32,6 +33,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     int positions = 0;
     ImageView iv_poster;
     RecyclerView rcv;
+    TextView tv_video_title;
+    TextView tv_published_date;
+    TextView tv_video_description;
 
     final static String TAG = "RecyclerViewAdapter";
 
@@ -53,13 +57,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public RecyclerViewAdapter( Context context, List<String> videoID ) {
         this.videoID = videoID;
         this.context = context;
-
     }
 
-    public RecyclerViewAdapter( Context context, VideoInfo[] videoInfo, ImageView iv_poster, RecyclerView rcv ) {
+    public RecyclerViewAdapter( Context context, VideoInfo[] videoInfo, ImageView iv_poster, TextView tv_video_title, TextView tv_published_date, TextView tv_video_description, RecyclerView rcv ) {
         this.videoInfo = videoInfo;
         this.context = context;
         this.iv_poster = iv_poster;
+        this.tv_video_title = tv_video_title;
+        this.tv_published_date = tv_published_date;
+        this.tv_video_description = tv_video_description;
         this.rcv = rcv;
     }
 
@@ -104,55 +110,56 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return new MyView( itemView );
     }
 
+    public void loadImageIntoView(final MyView holder, final int position, boolean isFailed ){
+
+        if( ! isFailed ) {
+            Picasso.get()
+                    //.load( "http://img.youtube.com/vi/" + videoID.get( position ) + "/0.jpg" )
+                    .load("https://img.youtube.com/vi/" + videoInfo[position].getVideoID() + "/maxresdefault.jpg")
+                    .into(holder.iv, new Callback() {
+
+                        @Override
+                        public void onSuccess() {
+                            // Log.i( TAG, "Image Load Successful for index : " + position );
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e(TAG, "Image Load Failed for index : " + position);
+                            loadImageIntoView( holder, position, true );
+                        }
+
+                    });
+        }
+        else{
+            Picasso.get()
+                    //.load( "http://img.youtube.com/vi/" + videoID.get( position ) + "/0.jpg" )
+                    // .load("https://img.youtube.com/vi/" + videoInfo[position].getVideoID() + "/maxresdefault.jpg" )
+                    .load("https://img.youtube.com/vi/" + videoInfo[position].getVideoID() + "/0.jpg" )
+                    .resize( 215, 119 )
+                    .centerCrop( Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL )
+                    .into(holder.iv, new Callback() {
+
+                        @Override
+                        public void onSuccess() {
+                            // Log.i( TAG, "Image Load Successful for index : " + position );
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e(TAG, "Image Load Failed for 0 thumbnail  : " + position);
+
+                        }
+
+                    });
+        }
+    }
+
     @Override
     public void onBindViewHolder( final MyView holder, final int position ) {
 
-        Picasso.get()
-                //.load( "http://img.youtube.com/vi/" + videoID.get( position ) + "/0.jpg" )
-                .load( "https://img.youtube.com/vi/" + videoInfo[ position ].getVideoID() + "/maxresdefault.jpg" )
-                .into( holder.iv );
+        loadImageIntoView( holder, position, false );
         final View rootView = holder.iv.getRootView();
-
-        /*if( videoInfo[ position ].isFirst() ){
-            Log.d( TAG, "first called with data : " + videoInfo[ position ].getVideoID() );
-            *//*TextView tv_spacing = (TextView) rootView.findViewById( R.id.tv_spacing );
-            tv_spacing.setVisibility( View.VISIBLE );*//*
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins( 120, 0, 0, 0 );
-            rootView.setLayoutParams( lp );
-        }*/
-
-        /*if( videoID.get( positions ) == null ){
-            //TextView tv_spacing = (TextView) rootView.findViewById( R.id.tv_spacing );
-            holder.tv_spacing.setVisibility( View.VISIBLE );
-
-            //ImageView ivv = (ImageView) rootView.findViewById( R.id.iv );
-            holder.iv.setVisibility( View.GONE );
-            return;
-        }*/
-
-
-
-       /* rootView.setOnKeyListener( new View.OnKeyListener() {
-            @Override
-            public boolean onKey( View v, int keyCode, KeyEvent event ) {
-                Log.d( TAG, "keyCode : " + keyCode );
-                //scrollRecyclerViewToMiddle( rcv, position );
-                //rcv.smoothScrollToPosition( position );
-                View parent = (View)v.getParent();
-                *//*if( keyCode ==  22 ){
-                    parent.scrollBy( 150, 0 );
-                    //ObjectAnimator.ofInt( rcv, "scrollX",  160 ).setDuration( 500 ).start();
-                    //scrollCenter( parent, rcv );
-
-                }
-                else if( keyCode ==  21 ){
-                    parent.scrollBy( -150, 0 );
-                    //scrollCenter( parent, rcv );
-                }*//*
-                return false;
-            }
-        });*/
 
 
         rootView.setOnFocusChangeListener( new View.OnFocusChangeListener() {
@@ -163,14 +170,35 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 if( hasFocus ) {
                     /*ObjectAnimator.ofFloat( itemView, "scaleX", 1.0f, 0.9f ).setDuration( 250 ).start();
                     ObjectAnimator.ofFloat( itemView, "scaleY", 1.0f, 0.9f ).setDuration( 250 ).start();*/
-                    v.setBackground( context.getResources().getDrawable( R.drawable.bt_focus ) );
                     //holder.iv.getRootView().setBackgroundColor( context.getResources().getColor( R.color.white ) );
+                    v.setBackground( context.getResources().getDrawable( R.drawable.bt_focus ) );
+                    tv_video_title.setText( videoInfo[ position ].getVideoTitle() );
+                    tv_video_description.setText( videoInfo[ position ].getVideoDescription() );
+                    tv_published_date.setText( videoInfo[ position ].getPublishedAt() + "" );
+
                     Picasso.get()
                             //.load( "http://img.youtube.com/vi/" + videoID.get( position ) + "/0.jpg" )
                             .load( "https://img.youtube.com/vi/" + videoInfo[ position ].getVideoID() + "/maxresdefault.jpg" )
                             .resize( 1344, 594 )
                             .centerCrop( Gravity.LEFT | Gravity.TOP )
-                            .into( iv_poster );
+                            .into( iv_poster, new Callback() {
+
+                                @Override
+                                public void onSuccess() {
+                                }
+
+                                @Override
+                                public void onError( Exception e ) {
+                                    Picasso.get()
+                                            //.load( "http://img.youtube.com/vi/" + videoID.get( position ) + "/0.jpg" )
+                                            .load("https://img.youtube.com/vi/" + videoInfo[position].getVideoID() + "/0.jpg" )
+                                            .resize( 1344, 594 )
+                                            .centerCrop( Gravity.LEFT | Gravity.TOP )
+                                            .into( iv_poster );
+
+                                }
+
+                            });
 
                 }
                 else{

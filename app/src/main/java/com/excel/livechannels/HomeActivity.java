@@ -3,8 +3,12 @@ package com.excel.livechannels;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,12 +21,20 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.excel.excelclasslibrary.UtilNetwork;
+import com.excel.excelclasslibrary.UtilURL;
 import com.excel.livechannels.adapters.RecyclerViewAdapter;
 import com.excel.livechannels.data.VideoInfo;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.excel.livechannels.data.Constants.WEBSERVICE_URL;
 
 public class HomeActivity extends Activity {
 
@@ -45,11 +57,16 @@ public class HomeActivity extends Activity {
     //RelativeLayout rl_content;
     LinearLayout ll_content;
 
+    TextView tv_video_title, tv_published_date, tv_video_description;
+
 
     private void init(){
 
         iv_poster = (ImageView) findViewById( R.id.iv_poster );
         ll_content = (LinearLayout) findViewById( R.id.ll_content );
+        tv_video_title = (TextView) findViewById( R.id.tv_video_title );
+        tv_published_date = (TextView) findViewById( R.id.tv_published_date );
+        tv_video_description = (TextView) findViewById( R.id.tv_video_description );
         //rcv = (RecyclerView) findViewById( R.id.rcv1 );
 
         // 1st Line
@@ -61,11 +78,9 @@ public class HomeActivity extends Activity {
         tv_category_name1 = (TextView) ll_category_holder.findViewById( R.id.tv_category_name );
         tv_category_name1.setText( "台湾ニュース" );
 
-        rcvAdapter = new RecyclerViewAdapter( context, videoInfo, iv_poster, rcv1 );
         rcvLayoutManager = new LinearLayoutManager( context, RecyclerView.HORIZONTAL, false );
         //rcvLayoutManager.scrollHorizontallyBy(  );
         rcv1.setLayoutManager( rcvLayoutManager );
-        rcv1.setAdapter( rcvAdapter );
 
         ll_content.addView( ll_category_holder );
 
@@ -77,10 +92,8 @@ public class HomeActivity extends Activity {
         tv_category_name2 = (TextView) ll_category_holder1.findViewById( R.id.tv_category_name );
         tv_category_name2.setText( "台北台北の観光名所" );
 
-        rcvAdapter1 = new RecyclerViewAdapter( context, videoInfo1, iv_poster, rcv2 );
         rcvLayoutManager1 = new LinearLayoutManager( context, RecyclerView.HORIZONTAL, false );
         rcv2.setLayoutManager( rcvLayoutManager1 );
-        rcv2.setAdapter( rcvAdapter1 );
 
         ll_content.addView( ll_category_holder1 );
     }
@@ -92,91 +105,12 @@ public class HomeActivity extends Activity {
 
         init();
 
-        /*rcv1 = (RecyclerView) findViewById( R.id.rcv1 );
-        rcv2 = (RecyclerView) findViewById( R.id.rcv2 );
-        rcv1.setNestedScrollingEnabled(false);
-        rcv2.setNestedScrollingEnabled(false);
-        //recyclerViewLayoutManager = new LinearLayoutManager( context );
-
-        recyclerViewLayoutManager = new LinearLayoutManagerWithSmoothScroller( context, RecyclerView.HORIZONTAL, false );
-        recyclerViewLayoutManager1 = new LinearLayoutManagerWithSmoothScroller( context, RecyclerView.HORIZONTAL, false );
-
-        // Add items to the RecyclerView
-        addVideoIDsIntoList();
-
-        recyclerViewHorizontalAdapter = new RecyclerViewAdapter( context, videoInfo, iv_poster, rcv1 );
-        recyclerViewHorizontalAdapter1 = new RecyclerViewAdapter( context, videoInfo, iv_poster, rcv2 );
-
-        horizontalLayout = new LinearLayoutManager( context, LinearLayoutManager.HORIZONTAL, false );
-        horizontalLayout1 = new LinearLayoutManager( context, LinearLayoutManager.HORIZONTAL, false );
-        rcv1.setLayoutManager( horizontalLayout );
-        rcv2.setLayoutManager( horizontalLayout1 );
-        rcv1.setAdapter( recyclerViewHorizontalAdapter );
-        rcv2.setAdapter( recyclerViewHorizontalAdapter1 );*/
-
-
-
-
-        /*rcv1.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.d( TAG, "keyCode rc : " +keyCode );
-
-                *//*LinearLayout ll = (LinearLayout) v;
-
-                if( ( keyCode == 22 ) && ( index < total_items ) ) {
-                    //scrollCenter( ll, rcv1 );
-                    rcv1.scrollBy( 219, 0 );
-                    rcv1.scrollToPosition(index++);
-                }
-                else if( ( keyCode == 22 ) && ( index == total_items ) ){
-
-                }
-                else if( ( keyCode == 21 ) && ( index > 0 ) ) {
-                    //scrollCenter( ll, rcv1 );
-                    rcv1.scrollBy( -219, 0 );
-                    rcv1.scrollToPosition(index--);
-                }
-                else if( ( keyCode == 21 ) && ( index == 0 ) ){
-
-                }*//*
-                return false;
-            }
-        });*/
-
-
-
-
-
-
-        /*rcv1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange( View v, boolean hasFocus ) {
-                //Log.i("ONFOCUSCHANGE- reclist", "focus has changed I repeat the focus has changed! current focus = " + currFocus);
-
-                if( currFocus != RECVIEW1 ){
-                    currFocus = RECVIEW1;
-                    rcv1.getChildAt(0 ).requestFocus();
-
-                    //scrollCenter( v, rcv1 );
-                }
-
-                rcv1.scrollBy( 219, 0 );
-            }
-        });*/
-
-
-
-        //Log.d( TAG, "oncreate Height : " + iv_poster.getHeight() + ", Width : " + iv_poster.getWidth() );
-
         Picasso.get()
                 .load( R.drawable.bahubali1 )
                 .resize( 1344, 594 )
                 .centerCrop( Gravity.LEFT | Gravity.TOP )
                 .into( iv_poster );
 
-
-        //iv_poster.setMaxWidth( 1056 );
     }
 
     /*@Override
@@ -186,7 +120,12 @@ public class HomeActivity extends Activity {
     }*/
 
     public void addVideoIDsIntoList(){
-        videoID = new ArrayList<String>();
+
+        // Call the Webservice for the data
+        AsyncYouTubeData asyncYouTubeData = new AsyncYouTubeData();
+        asyncYouTubeData.execute();
+
+        /*videoID = new ArrayList<String>();
         videoID1 = new ArrayList<String>();
         videoInfo = new VideoInfo[ 7 ];
         videoInfo1 = new VideoInfo[ 7 ];
@@ -218,7 +157,7 @@ public class HomeActivity extends Activity {
                 videoInfo[i] = new VideoInfo(videoID.get(i), false);
                 videoInfo1[i] = new VideoInfo(videoID1.get(i), false);
             }
-        }
+        }*/
     }
 
     @Override
@@ -243,5 +182,76 @@ public class HomeActivity extends Activity {
         recyclerView.scrollBy((left - right)/2,0);
     }
 
+
+    class AsyncYouTubeData extends AsyncTask< String, Integer, String > {
+
+        @Override
+        protected String doInBackground( String... params ) {
+            String url = WEBSERVICE_URL;
+            Log.d( TAG, "Webservice path : " + url );
+            String response = UtilNetwork.makeRequestForData( url, "POST",
+                    UtilURL.getURLParamsFromPairs( new String[][]{ { "what_do_you_want", "get_static_video_info" } } ) );
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute( String result ) {
+            super.onPostExecute( result );
+
+            Log.i( TAG,  "inside onPostExecute()" );
+
+            if( result != null ){
+                videoInfo = new VideoInfo[ 6 ];
+                videoInfo1 = new VideoInfo[ 7 ];
+
+                Log.i( TAG,  result );
+                try {
+                    JSONArray jsonArray = new JSONArray( result );
+                    JSONObject jsonObject = jsonArray.getJSONObject( 0 );
+
+                    String type = jsonObject.getString( "type" );
+                    if( type.equals( "success" )){
+
+                        JSONArray responsesArray = jsonObject.getJSONArray( "info" );
+                        for( int i = 0 ; i < responsesArray.length() ; i++ ){
+                            JSONArray responseArray = responsesArray.getJSONArray( i );
+                            for( int j = 0 ; j < responseArray.length() ; j++ ){
+                                JSONObject videoInfoJsonObject = responseArray.getJSONObject( j );
+                                if( i == 0 ){
+                                    videoInfo[ j ] = new VideoInfo( videoInfoJsonObject.getString( "videoID" ),
+                                            videoInfoJsonObject.getString( "title" ),
+                                            videoInfoJsonObject.getLong( "publishedAt" ),
+                                            videoInfoJsonObject.getString( "description" ) );
+                                    //Log.d( TAG, "videoInfo[ j ] : " + videoInfo[ j ].getVideoID() );
+                                }
+                                else if( i == 1 ){
+                                    videoInfo1[ j ] = new VideoInfo( videoInfoJsonObject.getString( "videoID" ),
+                                            videoInfoJsonObject.getString( "title" ),
+                                            videoInfoJsonObject.getLong( "publishedAt" ),
+                                            videoInfoJsonObject.getString( "description" ) );
+                                    //Log.i( TAG, "videoInfo1[ j ] : " + videoInfo1[ j ].getVideoID() );
+                                }
+
+                            }
+                        }
+                    }
+
+                    rcvAdapter = new RecyclerViewAdapter( context, videoInfo, iv_poster, tv_video_title, tv_published_date, tv_video_description, rcv1 );
+                    rcv1.setAdapter( rcvAdapter );
+                    rcvAdapter1 = new RecyclerViewAdapter( context, videoInfo1, iv_poster, tv_video_title, tv_published_date, tv_video_description, rcv2 );
+                    rcv2.setAdapter( rcvAdapter1 );
+
+                }
+                catch ( JSONException e ) {
+                    e.printStackTrace();
+                }
+            }
+            else{
+                Log.e( TAG, "Null was returned " );
+            }
+
+        }
+    }
 }
 
