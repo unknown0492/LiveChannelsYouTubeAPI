@@ -4,10 +4,12 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,9 +24,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.excel.excelclasslibrary.UtilNetwork;
+import com.excel.excelclasslibrary.UtilSharedPreferences;
 import com.excel.excelclasslibrary.UtilURL;
 import com.excel.livechannels.adapters.RecyclerViewAdapter;
+import com.excel.livechannels.data.VideoCategory;
 import com.excel.livechannels.data.VideoInfo;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -34,9 +39,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.excel.livechannels.data.Constants.WEBSERVICE_URL;
+import okhttp3.internal.Util;
 
-public class HomeActivity extends Activity {
+import static com.excel.livechannels.data.Constants.SHARED_PREFERENCES_DATA;
+import static com.excel.livechannels.data.Constants.SHARED_PREFERENCES_KEY_INFO;
+import static com.excel.livechannels.data.Constants.WEBSERVICE_URL;
+import static com.excel.livechannels.logic.DateLogic.getReadableDateFromMilis;
+
+public class HomeActivity extends Activity implements MainFragment.ActivityFragmentInterface {
 
     final static String TAG = "HomeActivity";
     ImageView iv_poster;
@@ -58,45 +68,54 @@ public class HomeActivity extends Activity {
     LinearLayout ll_content;
 
     TextView tv_video_title, tv_published_date, tv_video_description;
+    VideoCategory[] videoCategories;
 
 
     private void init(){
 
         iv_poster = (ImageView) findViewById( R.id.iv_poster );
-        ll_content = (LinearLayout) findViewById( R.id.ll_content );
         tv_video_title = (TextView) findViewById( R.id.tv_video_title );
         tv_published_date = (TextView) findViewById( R.id.tv_published_date );
         tv_video_description = (TextView) findViewById( R.id.tv_video_description );
-        //rcv = (RecyclerView) findViewById( R.id.rcv1 );
 
-        // 1st Line
-        addVideoIDsIntoList();
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService( LAYOUT_INFLATER_SERVICE );
-        LinearLayout ll_category_holder = (LinearLayout) layoutInflater.inflate( R.layout.ll_category_holder, null );
-        rcv1 = (RecyclerView) ll_category_holder.findViewById( R.id.rcv );
-        rcv1.setNextFocusDownId( rcv1.getId() );
-        tv_category_name1 = (TextView) ll_category_holder.findViewById( R.id.tv_category_name );
-        tv_category_name1.setText( "台湾ニュース" );
+        //renderData();
 
-        rcvLayoutManager = new LinearLayoutManager( context, RecyclerView.HORIZONTAL, false );
-        //rcvLayoutManager.scrollHorizontallyBy(  );
-        rcv1.setLayoutManager( rcvLayoutManager );
-
-        ll_content.addView( ll_category_holder );
-
-        // 2nd Line
-        LayoutInflater layoutInflater1 = (LayoutInflater) getSystemService( LAYOUT_INFLATER_SERVICE );
-        LinearLayout ll_category_holder1 = (LinearLayout) layoutInflater1.inflate( R.layout.ll_category_holder, null );
-        rcv2 = (RecyclerView) ll_category_holder1.findViewById( R.id.rcv );
-        rcv2.setNextFocusDownId( rcv2.getId() );
-        tv_category_name2 = (TextView) ll_category_holder1.findViewById( R.id.tv_category_name );
-        tv_category_name2.setText( "台北台北の観光名所" );
-
-        rcvLayoutManager1 = new LinearLayoutManager( context, RecyclerView.HORIZONTAL, false );
-        rcv2.setLayoutManager( rcvLayoutManager1 );
-
-        ll_content.addView( ll_category_holder1 );
     }
+
+    /*private void renderData() {
+        SharedPreferences spfs = UtilSharedPreferences.createSharedPreference(context, SHARED_PREFERENCES_DATA);
+
+        try {
+            JSONArray responsesArray = null;
+            responsesArray = new JSONArray( UtilSharedPreferences.getSharedPreference( spfs, SHARED_PREFERENCES_KEY_INFO, "" ) );
+
+            videoCategories = new VideoCategory[responsesArray.length()];
+
+            for (int i = 0; i < responsesArray.length(); i++) {
+                JSONObject responseObject = responsesArray.getJSONObject(i);
+                videoCategories[i].setCategoryName(responseObject.getString("category"));
+                JSONArray responseArray = responseObject.getJSONArray("information");
+
+                videoInfo = new VideoInfo[responseArray.length()];
+
+                for (int j = 0; j < responseArray.length(); j++) {
+                    JSONObject videoInfoJsonObject = responseArray.getJSONObject(j);
+
+                    videoInfo[j] = new VideoInfo(videoInfoJsonObject.getString("videoID"),
+                            videoInfoJsonObject.getString("title"),
+                            videoInfoJsonObject.getLong("publishedAt"),
+                            videoInfoJsonObject.getString("description"));
+                    // Log.d( TAG, "videoInfo[ j ] : " + videoInfo[ j ].getVideoID() );
+                    videoCategories[i].setVideoInfo(videoInfo);
+
+                }
+            }
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }*/
+
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -105,11 +124,11 @@ public class HomeActivity extends Activity {
 
         init();
 
-        Picasso.get()
+        /*Picasso.get()
                 .load( R.drawable.bahubali1 )
                 .resize( 1344, 594 )
                 .centerCrop( Gravity.LEFT | Gravity.TOP )
-                .into( iv_poster );
+                .into( iv_poster );*/
 
     }
 
@@ -122,8 +141,8 @@ public class HomeActivity extends Activity {
     public void addVideoIDsIntoList(){
 
         // Call the Webservice for the data
-        AsyncYouTubeData asyncYouTubeData = new AsyncYouTubeData();
-        asyncYouTubeData.execute();
+        /*AsyncYouTubeData asyncYouTubeData = new AsyncYouTubeData();
+        asyncYouTubeData.execute();*/
 
         /*videoID = new ArrayList<String>();
         videoID1 = new ArrayList<String>();
@@ -182,8 +201,67 @@ public class HomeActivity extends Activity {
         recyclerView.scrollBy((left - right)/2,0);
     }
 
+    @Override
+    public void updatePoster( VideoInfo videoInfo ) {
+        loadImageIntoView( videoInfo, false );
+    }
 
-    class AsyncYouTubeData extends AsyncTask< String, Integer, String > {
+    @Override
+    public void updateMetaData( VideoInfo videoInfo ) {
+        loadImageIntoView( videoInfo, false );
+        tv_video_title.setText( videoInfo.getVideoTitle() );
+        tv_published_date.setText( getReadableDateFromMilis( videoInfo.getPublishedAt() ) );
+        tv_video_description.setText( videoInfo.getVideoDescription() );
+    }
+
+    public void loadImageIntoView( final VideoInfo videoInfo, boolean isFailed ){
+
+        if( ! isFailed ) {
+            Picasso.get()
+                    //.load( "http://img.youtube.com/vi/" + videoID.get( position ) + "/0.jpg" )
+                    .load("https://img.youtube.com/vi/" + videoInfo.getVideoID() + "/maxresdefault.jpg" )
+                    .resize( 1344, 594 )
+                    .centerCrop( Gravity.LEFT | Gravity.TOP )
+                    .into( iv_poster, new Callback() {
+
+                        @Override
+                        public void onSuccess() {
+                            // Log.i( TAG, "Image Load Successful for index : " + position );
+                        }
+
+                        @Override
+                        public void onError( Exception e ) {
+                            Log.e( TAG, "Image Load Failed : " );
+                            loadImageIntoView( videoInfo,true );
+                        }
+
+                    });
+        }
+        else{
+            Picasso.get()
+                    //.load( "http://img.youtube.com/vi/" + videoID.get( position ) + "/0.jpg" )
+                    // .load("https://img.youtube.com/vi/" + videoInfo[position].getVideoID() + "/maxresdefault.jpg" )
+                    .load("https://img.youtube.com/vi/" + videoInfo.getVideoID() + "/0.jpg" )
+                    .resize( 1344, 594 )
+                    .centerCrop( Gravity.LEFT | Gravity.TOP )
+                    .into( iv_poster, new Callback() {
+
+                        @Override
+                        public void onSuccess() {
+                            // Log.i( TAG, "Image Load Successful for index : " + position );
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e(TAG, "Image Load Failed for 0 thumbnail ");
+
+                        }
+
+                    });
+        }
+    }
+
+    /*class AsyncYouTubeData extends AsyncTask< String, Integer, String > {
 
         @Override
         protected String doInBackground( String... params ) {
@@ -252,6 +330,11 @@ public class HomeActivity extends Activity {
             }
 
         }
-    }
+    }*/
+
+
+
 }
+
+
 

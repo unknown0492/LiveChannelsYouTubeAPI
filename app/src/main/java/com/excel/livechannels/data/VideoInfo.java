@@ -3,6 +3,8 @@ package com.excel.livechannels.data;
 public class VideoInfo {
     private String videoID;
     private String videoTitle;
+    private String useThumbnail;
+    private String thumbnailPath;
     private long publishedAt;
     private String videoDescription;
     private boolean isFirst = false;
@@ -12,11 +14,13 @@ public class VideoInfo {
         this.isFirst = isFirst;
     }
 
-    public VideoInfo( String videoID, String videoTitle, long publishedAt, String videoDescription ){
+    public VideoInfo( String videoID, String videoTitle, long publishedAt, String videoDescription, String useThumbnail, String thumbnailPath ){
         this.videoID = videoID;
         this.videoTitle = videoTitle;
         this.publishedAt = publishedAt;
         this.videoDescription = videoDescription;
+        this.useThumbnail = useThumbnail;
+        this.thumbnailPath = thumbnailPath;
     }
 
     public String getVideoID() {
@@ -57,5 +61,21 @@ public class VideoInfo {
 
     public void setVideoDescription(String videoDescription) {
         this.videoDescription = videoDescription;
+    }
+
+    public String getUseThumbnail() {
+        return useThumbnail;
+    }
+
+    public void setUseThumbnail(String useThumbnail) {
+        this.useThumbnail = useThumbnail;
+    }
+
+    public String getThumbnailPath() {
+        return thumbnailPath;
+    }
+
+    public void setThumbnailPath(String thumbnailPath) {
+        this.thumbnailPath = thumbnailPath;
     }
 }

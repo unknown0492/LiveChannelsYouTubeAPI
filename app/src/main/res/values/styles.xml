@@ -8,4 +8,28 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="Theme.Lean.Custom" parent="Theme.Leanback.Browse">
+
+    </style>
+
+    <style name="CustomCardViewStyle" parent="Widget.Leanback.ImageCardViewStyle">
+        <item name="lbImageCardViewType">ImageOnly</item>
+    </style>
+
+    <style name="aa" parent="Widget.Leanback.ImageCardView">
+        <item name="android:background">@drawable/item_focus_bg</item>
+    </style>
+
+    <!-- This is the category name appearing on top left of each row -->
+    <style name="MyCustomRowHeaderStyle" parent="Widget.Leanback.Row.Header">
+
+    </style>
+
+    <style name="CustomImageCardTheme" parent="Theme.Leanback">
+        <item name="imageCardViewStyle">@style/CustomCardViewStyle</item>
+        <item name="rowHeaderStyle">@style/MyCustomRowHeaderStyle</item>
+    </style>
+
+
+
 </resources>

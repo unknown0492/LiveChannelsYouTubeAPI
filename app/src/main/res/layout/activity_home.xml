@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/black"
     tools:context=".HomeActivity">
 
     <RelativeLayout
         android:id="@+id/ll_description"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="400dp"
         android:layout_alignParentStart="true"
-        android:layout_weight="5.5"
         android:layout_alignParentLeft="true">
 
 
@@ -65,11 +64,13 @@
                 android:textColor="@color/white"
                 android:text="Bahubali是在战争中从未输过的yoddha的故事。 他是德瓦塞纳的Katappa的伟大儿子。 Devsena是一个非常漂亮的女孩，bahubali可以做任何事来得到她！ 他有一个致命的兄弟，他的邪恶眼睛盯着Maheshmati王座。"
                 android:textSize="19sp"
+                android:layout_marginBottom="20dp"
                 android:lineSpacingExtra="2sp" />
 
         </RelativeLayout>
 
     </RelativeLayout>
+
 
 
 
@@ -114,73 +115,29 @@
 
     </LinearLayout>-->
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4.5"
-        android:paddingLeft="80dp"
-        android:background="@color/black">
 
-        <LinearLayout
-            android:id="@+id/ll_content"
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/main_browse_fragment"
+            android:name="com.excel.livechannels.MainFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="5dp">
-
-            <!--<TextView
-                android:id="@+id/tv_category_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text="Live NEWS Channels"
-                android:textSize="17sp"
-                android:nextFocusDown="@+id/rcv1"
-                android:layout_toRightOf="@+id/iv_trans_black" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rcv1"
-                android:layout_below="@+id/tv_category_name"
-                android:layout_toRightOf="@+id/iv_trans_black"
-                android:scrollbars="none"
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="135dp"
-                android:scrollX="100dp">
-
-                <requestFocus />
-
-            </android.support.v7.widget.RecyclerView>
-
-            <ImageView
-                android:id="@+id/iv_trans_black"
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:background="@drawable/trans_black" />
-
-            <TextView
-                android:id="@+id/tv_category_name1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text="Cartoon Channels"
-                android:textSize="17sp"
-                android:layout_toRightOf="@+id/iv_trans_black"
-                android:layout_below="@+id/rcv1"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rcv2"
-                android:layout_below="@+id/tv_category_name1"
-                android:layout_toRightOf="@+id/iv_trans_black"
-                android:scrollbars="none"
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="135dp"
-                android:scrollX="100dp"
-                android:focusable="true"
-                android:focusableInTouchMode="true" />-->
-        </LinearLayout>
-    </ScrollView>
+            tools:context=".HomeActivity"
+            tools:deviceIds="tv"
+            android:paddingLeft="0dp"
+            android:layout_below="@+id/ll_description"
+            android:background="@color/black"
+            tools:ignore="MergeRootFrame" />
 
 
-</LinearLayout>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="800dp"
+        android:id="@+id/left_transparent_img"
+        android:layout_below="@+id/ll_description"
+        android:layout_alignStart="@+id/main_browse_fragment"
+        android:background="@drawable/trans_black" />
+
+</RelativeLayout>
